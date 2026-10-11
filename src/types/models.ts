@@ -154,6 +154,12 @@ export interface SysConfig {
   remark?: string
 }
 
+export interface SecurityPolicy {
+  passwordMinLength: number
+  passwordMaxLength: number
+  passwordHistory: number
+}
+
 export interface LoginLog {
   id: number
   userId?: number

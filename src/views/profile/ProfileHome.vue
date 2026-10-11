@@ -51,7 +51,7 @@
           <el-form-item label="原密码"><el-input v-model="pwd.oldPassword" type="password" show-password /></el-form-item>
           <el-form-item label="新密码">
             <el-input v-model="pwd.newPassword" type="password" show-password />
-            <p class="hint">8–32 位，需包含大小写字母、数字和特殊字符，且不能与最近密码重复。</p>
+            <p class="hint">{{ passwordHint }}</p>
           </el-form-item>
           <el-form-item label="确认新密码"><el-input v-model="pwd.confirm" type="password" show-password /></el-form-item>
           <el-button type="warning" :loading="changing" @click="changePassword">确认修改</el-button>
@@ -103,7 +103,7 @@ import AvatarCropDialog from './components/AvatarCropDialog.vue'
 import { usePermissionStore } from '@/stores/permission'
 import { useSessionStore } from '@/stores/session'
 import { useTabsStore } from '@/stores/tabs'
-import type { OnlineSession } from '@/types/models'
+import type { OnlineSession, SecurityPolicy } from '@/types/models'
 
 const session = useSessionStore()
 const permission = usePermissionStore()
@@ -118,6 +118,12 @@ const pwd = reactive({ oldPassword: '', newPassword: '', confirm: '' })
 const uploadRef = ref<UploadInstance>()
 const crop = reactive({ visible: false, saving: false, file: null as File | null })
 const orgLabel = computed(() => [profile.value?.deptName, profile.value?.postName].filter(Boolean).join(' / ') || '--')
+const policy = ref<SecurityPolicy>({ passwordMinLength: 8, passwordMaxLength: 32, passwordHistory: 3 })
+const passwordHint = computed(() => {
+  const history = policy.value.passwordHistory
+  const repeat = history > 0 ? `，且不能与最近 ${history} 次密码重复` : ''
+  return `${policy.value.passwordMinLength}–${policy.value.passwordMaxLength} 位，需包含大小写字母、数字和特殊字符${repeat}。`
+})
 
 watch(
   profile,
@@ -208,6 +214,9 @@ onMounted(() => {
   loadSessions().catch(() => {
     sessions.value = []
   })
+  authApi.policy().then((data) => {
+    policy.value = data
+  }).catch(() => undefined)
 })
 </script>
 

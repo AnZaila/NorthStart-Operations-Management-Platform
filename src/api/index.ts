@@ -14,6 +14,7 @@ import type {
   ImportResult,
   Announcement,
   Profile,
+  SecurityPolicy,
   ServerSnapshot,
   SysConfig,
   SysDept,
@@ -33,6 +34,7 @@ export const authApi = {
   logout: (refreshToken?: string) =>
     request<void>({ url: '/auth/logout', method: 'post', data: { refreshToken } }),
   me: () => request<Profile>({ url: '/auth/me' }),
+  policy: () => request<SecurityPolicy>({ url: '/auth/policy' }),
   menus: () => request<MenuNode[]>({ url: '/auth/menus' }),
   changePassword: (data: { oldPassword: string; newPassword: string }) =>
     request<void>({ url: '/auth/password', method: 'post', data }),

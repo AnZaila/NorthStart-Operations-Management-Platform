@@ -64,10 +64,36 @@ async function loadCaptcha() {
   captcha.required = true
 }
 
+function applyCaptcha(error: unknown) {
+  const data =
+    error instanceof ApiError
+      ? error.data
+      : error && typeof error === 'object' && 'data' in error
+        ? (error as { data?: unknown }).data
+        : undefined
+  const payload =
+    data && typeof data === 'object'
+      ? (data as { captchaRequired?: boolean; captchaId?: string; question?: string })
+      : null
+  if (payload?.captchaRequired) {
+    captcha.required = true
+    captcha.captchaId = payload.captchaId ?? ''
+    captcha.question = payload.question ?? ''
+    return
+  }
+  captcha.required = false
+  captcha.captchaId = ''
+  captcha.question = ''
+  form.captchaCode = ''
+}
+
 async function handleLogin() {
-  await formRef.value?.validate()
+  if (loading.value) {
+    return
+  }
   loading.value = true
   try {
+    await formRef.value?.validate()
     const tokens = await session.login({
       username: form.username,
       password: form.password,
@@ -78,14 +104,7 @@ async function handleLogin() {
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard'
     await router.push(tokens.mustChangePassword ? '/profile' : redirect)
   } catch (error) {
-    if (error instanceof ApiError && error.data && typeof error.data === 'object') {
-      const data = error.data as { captchaRequired?: boolean; captchaId?: string; question?: string }
-      if (data.captchaRequired) {
-        captcha.required = true
-        captcha.captchaId = data.captchaId ?? ''
-        captcha.question = data.question ?? ''
-      }
-    }
+    applyCaptcha(error)
   } finally {
     loading.value = false
   }
