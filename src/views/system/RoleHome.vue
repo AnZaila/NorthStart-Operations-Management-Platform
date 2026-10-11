@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">ACCESS CONTROL</span>
         <h2>角色管理</h2>
-        <p>功能权限按菜单树勾选，数据范围单独配置。复制角色可在现有权限集上微调。</p>
+        <p>为角色勾选可访问的功能和数据范围，也可复制后微调。</p>
       </div>
       <div class="hero-actions">
         <el-button @click="load">刷新</el-button>

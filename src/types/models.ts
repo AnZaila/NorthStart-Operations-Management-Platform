@@ -188,6 +188,58 @@ export interface Notice {
   createTime?: string
 }
 
+export interface Announcement {
+  id: number
+  title: string
+  content?: string
+  type: string
+  status: 'draft' | 'published'
+  publisherId?: number
+  publisherName?: string
+  publishTime?: string
+  recipientCount?: number
+  createTime?: string
+}
+
+export interface ImportResult {
+  success: number
+  failed: number
+  errors: string[]
+}
+
+export interface ServerSnapshot {
+  os: {
+    name: string
+    arch: string
+    version: string
+    cpuCount: number
+    systemLoad: number
+    cpuPercent: number
+  }
+  jvm: {
+    name: string
+    version: string
+    vendor: string
+    startTime: string
+    uptime: string
+    home: string
+    pid: number
+  }
+  memory: {
+    heapUsed: number
+    heapMax: number
+    nonHeapUsed: number
+    physicalTotal: number
+    physicalFree: number
+  }
+  disks: Array<{
+    path: string
+    type: string
+    total: number
+    usable: number
+  }>
+}
+
 export interface FileObject {
   id: number
   originalName: string

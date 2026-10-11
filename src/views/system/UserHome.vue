@@ -4,10 +4,20 @@
       <div class="hero-copy">
         <span class="eyebrow">USER CENTER</span>
         <h2>用户管理</h2>
-        <p>账号生命周期、角色与组织归属都走真实接口，按钮按权限码渲染。</p>
+        <p>管理账号状态、所属部门和角色，支持导入导出。</p>
       </div>
       <div class="hero-actions">
         <el-button @click="table.search()">刷新</el-button>
+        <el-button v-permission="'system:user:export'" @click="exportUsers">导出 Excel</el-button>
+        <el-button v-if="hasPermission('system:user:import')" @click="downloadTemplate">下载模板</el-button>
+        <el-upload
+          v-if="hasPermission('system:user:import')"
+          :show-file-list="false"
+          accept=".xlsx,.xls"
+          :http-request="importUsers"
+        >
+          <el-button>导入 Excel</el-button>
+        </el-upload>
         <el-button v-permission="'system:user:create'" type="primary" @click="openCreate">新建用户</el-button>
       </div>
     </section>
@@ -170,6 +180,22 @@
         <el-descriptions-item label="备注">{{ detail.user.remark || '--' }}</el-descriptions-item>
       </el-descriptions>
     </el-drawer>
+    <el-dialog v-model="importResult.visible" title="导入结果" width="520px">
+      <p>成功 {{ importResult.success }} 条，失败 {{ importResult.failed }} 条。</p>
+      <el-alert
+        v-if="importResult.errors.length"
+        type="warning"
+        :closable="false"
+        show-icon
+        title="失败明细"
+      />
+      <ul v-if="importResult.errors.length" class="import-errors">
+        <li v-for="item in importResult.errors" :key="item">{{ item }}</li>
+      </ul>
+      <template #footer>
+        <el-button type="primary" @click="importResult.visible = false">知道了</el-button>
+      </template>
+    </el-dialog>
     <el-dialog v-model="grant.visible" title="分配角色" width="480px" destroy-on-close>
       <el-select v-model="grant.roleIds" multiple style="width: 100%">
         <el-option v-for="item in roles" :key="item.id" :label="item.name" :value="item.id" />
@@ -185,10 +211,12 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import type { UploadRequestOptions } from 'element-plus'
 import { deptApi, dictApi, postApi, roleApi, userApi } from '@/api'
 import { usePermission } from '@/composables/usePermission'
 import { useTableQuery } from '@/composables/useTableQuery'
 import type { DictItem, SysDept, SysPost, SysRole, SysUser } from '@/types/models'
+import { downloadFile, saveDownload } from '@/utils/download'
 import { formatDateTime, maskEmail, maskPhone, statusLabel, statusTag } from '@/utils/format'
 
 const { hasPermission } = usePermission()
@@ -227,6 +255,36 @@ const dialog = reactive({
 })
 const detail = reactive({ visible: false, user: null as SysUser | null })
 const grant = reactive({ visible: false, saving: false, userId: 0, roleIds: [] as number[] })
+const importResult = reactive({ visible: false, success: 0, failed: 0, errors: [] as string[] })
+
+function filterParams() {
+  return {
+    keyword: table.filters.keyword,
+    status: table.filters.status,
+    roleId: table.filters.roleId,
+    deptId: table.filters.deptId,
+  }
+}
+
+function exportUsers() {
+  return saveDownload(() => downloadFile('/system/users/export', filterParams(), '用户列表.xlsx'))
+}
+
+function downloadTemplate() {
+  return saveDownload(
+    () => downloadFile('/system/users/import-template', undefined, '用户导入模板.xlsx'),
+    '模板已下载',
+  )
+}
+
+async function importUsers(options: UploadRequestOptions) {
+  const result = await userApi.importUsers(options.file as File)
+  importResult.success = result.success
+  importResult.failed = result.failed
+  importResult.errors = result.errors ?? []
+  importResult.visible = true
+  await table.search()
+}
 const postsByDept = computed(() =>
   posts.value.filter((item) => !dialog.form.deptId || item.deptId === dialog.form.deptId),
 )
@@ -355,3 +413,12 @@ onMounted(async () => {
   await table.search()
 })
 </script>
+
+<style scoped>
+.import-errors {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+</style>

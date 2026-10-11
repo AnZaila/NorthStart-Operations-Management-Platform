@@ -1,5 +1,6 @@
 import type { Component } from 'vue'
 import {
+  Bell,
   Collection,
   Connection,
   Cpu,
@@ -10,6 +11,7 @@ import {
   Lock,
   Menu,
   Monitor,
+  Odometer,
   OfficeBuilding,
   Paperclip,
   Postcard,
@@ -21,6 +23,7 @@ import {
 } from '@element-plus/icons-vue'
 
 export const menuIconMap: Record<string, Component> = {
+  Bell,
   Collection,
   Connection,
   Cpu,
@@ -31,6 +34,7 @@ export const menuIconMap: Record<string, Component> = {
   Lock,
   Menu,
   Monitor,
+  Odometer,
   OfficeBuilding,
   Paperclip,
   Postcard,

@@ -21,7 +21,14 @@ const router = createRouter({
       name: 'RootLayout',
       component: () => import('@/layout/LayoutIndex.vue'),
       redirect: '/dashboard',
-      children: [],
+      children: [
+        {
+          path: 'inbox',
+          name: 'Inbox',
+          component: () => import('@/views/ops/InboxHome.vue'),
+          meta: { title: '消息中心' },
+        },
+      ],
     },
     {
       path: '/:pathMatch(.*)*',

@@ -97,15 +97,15 @@
       <el-card shadow="never" class="panel-card">
         <template #header>
           <div class="panel-title">
-            <strong>接入说明</strong>
-            <span>前后端分离</span>
+            <strong>今日要点</strong>
+            <span>需要关注的运营情况</span>
           </div>
         </template>
         <div class="learning-tip">
           <div class="tip-index">01</div>
           <div>
-            <strong>页面只消费接口</strong>
-            <p>工作台数据来自 <code>/api/v1/dashboard/overview</code>，权限菜单来自登录后的用户上下文。</p>
+            <strong>未读通知 {{ overview.todoCount }} 条</strong>
+            <p>待审核账号 {{ overview.pendingApproval }} 个，今日成功访问 {{ overview.todayVisits }} 次。</p>
           </div>
         </div>
       </el-card>

@@ -4,7 +4,10 @@
       <div class="hero-copy">
         <span class="eyebrow">AUDIT</span>
         <h2>操作日志</h2>
-        <p>用户、角色、组织等写操作会由切面自动落库。</p>
+        <p>追溯账号对用户、角色、组织等数据的变更记录。</p>
+      </div>
+      <div class="hero-actions">
+        <el-button type="primary" @click="exportLogs">导出 Excel</el-button>
       </div>
     </section>
 
@@ -56,12 +59,19 @@ import { onMounted } from 'vue'
 import { auditApi } from '@/api'
 import { useTableQuery } from '@/composables/useTableQuery'
 import type { OperLog } from '@/types/models'
+import { downloadFile, saveDownload } from '@/utils/download'
 import { formatDateTime } from '@/utils/format'
 
 const table = useTableQuery<OperLog, { keyword: string }>({
   fetcher: (query) => auditApi.operations(query),
   defaultFilters: { keyword: '' },
 })
+
+function exportLogs() {
+  return saveDownload(
+    () => downloadFile('/audit/operations/export', { keyword: table.filters.keyword }, '操作日志.xlsx'),
+  )
+}
 
 onMounted(() => table.search())
 </script>

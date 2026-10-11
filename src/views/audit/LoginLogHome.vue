@@ -6,6 +6,9 @@
         <h2>登录日志</h2>
         <p>记录成功与失败登录，普通成员仅能查看本人记录。</p>
       </div>
+      <div class="hero-actions">
+        <el-button type="primary" @click="exportLogs">导出 Excel</el-button>
+      </div>
     </section>
 
     <el-card shadow="never" class="filter-card">
@@ -58,12 +61,24 @@ import { onMounted } from 'vue'
 import { auditApi } from '@/api'
 import { useTableQuery } from '@/composables/useTableQuery'
 import type { LoginLog } from '@/types/models'
+import { downloadFile, saveDownload } from '@/utils/download'
 import { formatDateTime } from '@/utils/format'
 
 const table = useTableQuery<LoginLog, { keyword: string; success?: number }>({
   fetcher: (query) => auditApi.logins(query),
   defaultFilters: { keyword: '', success: undefined },
 })
+
+function exportLogs() {
+  return saveDownload(
+    () =>
+      downloadFile(
+        '/audit/logins/export',
+        { keyword: table.filters.keyword, success: table.filters.success },
+        '登录日志.xlsx',
+      ),
+  )
+}
 
 onMounted(() => table.search())
 </script>

@@ -30,7 +30,7 @@
 }
 
 .hero-copy p {
-  max-width: 52ch;
+  max-width: 60ch;
   margin: 12px 0 0;
   color: var(--color-text-muted);
 }
@@ -38,6 +38,7 @@
 .hero-actions,
 .filter-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   flex-shrink: 0;
 }

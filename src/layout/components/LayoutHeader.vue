@@ -23,25 +23,11 @@
     </div>
     <div class="header-right">
       <div class="header-date">{{ todayLabel }}</div>
-      <el-dropdown trigger="click" :hide-on-click="false">
-        <button class="theme-button" type="button" aria-label="通知">
-          <el-badge :value="unread" :hidden="unread === 0" :max="99">
-            <el-icon><Bell /></el-icon>
-          </el-badge>
-        </button>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item v-if="!notices.length" disabled>暂无通知</el-dropdown-item>
-            <el-dropdown-item v-for="item in notices" :key="item.id" @click="markRead(item)">
-              <div class="notice-item" :class="{ unread: !item.readFlag }">
-                <strong>{{ item.title }}</strong>
-                <small>{{ item.content }}</small>
-              </div>
-            </el-dropdown-item>
-            <el-dropdown-item v-if="unread" divided @click="markAll">全部标为已读</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+      <RouterLink to="/inbox" class="theme-button" aria-label="消息中心" title="消息中心">
+        <el-badge :value="unread" :hidden="unread === 0" :max="99">
+          <el-icon><Bell /></el-icon>
+        </el-badge>
+      </RouterLink>
       <button
         class="theme-button"
         type="button"
@@ -69,7 +55,9 @@
         </button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+            <el-dropdown-item>
+              <RouterLink class="profile-menu-link" to="/profile">个人中心</RouterLink>
+            </el-dropdown-item>
             <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -79,13 +67,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { ArrowLeft, ArrowRight, Sunny, Moon, ArrowDown, Bell } from '@element-plus/icons-vue'
 import { noticeApi } from '@/api'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { useSessionStore } from '@/stores/session'
-import type { Notice } from '@/types/models'
+import { bus } from '@/utils/bus'
 
 interface BreadcrumbItem {
   title: string
@@ -108,30 +96,29 @@ const emit = defineEmits<{
 const route = useRoute()
 const session = useSessionStore()
 const roleLabel = computed(() => session.profile?.roleNames?.[0] || session.profile?.roles?.[0] || '成员')
-const notices = ref<Notice[]>([])
-const unread = computed(() => notices.value.filter((item) => !item.readFlag).length)
+const unread = ref(0)
+let timer: number | undefined
 
-async function loadNotices() {
-  notices.value = await noticeApi.list()
-}
-
-async function markRead(item: Notice) {
-  if (item.readFlag) {
-    return
+async function loadUnread() {
+  try {
+    const data = await noticeApi.unreadCount()
+    unread.value = data.count
+  } catch {
+    unread.value = 0
   }
-  await noticeApi.read(item.id)
-  item.readFlag = 1
-}
-
-async function markAll() {
-  await noticeApi.readAll()
-  notices.value = notices.value.map((item) => ({ ...item, readFlag: 1 }))
 }
 
 onMounted(() => {
-  loadNotices().catch(() => {
-    notices.value = []
-  })
+  loadUnread()
+  bus.on('notices:reload', loadUnread)
+  timer = window.setInterval(loadUnread, 30000)
+})
+
+onUnmounted(() => {
+  bus.off('notices:reload', loadUnread)
+  if (timer) {
+    window.clearInterval(timer)
+  }
 })
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => {
@@ -230,6 +217,7 @@ function handleCommand(command: string | number | object) {
   background: var(--color-surface-muted);
   color: var(--color-text-muted);
   cursor: pointer;
+  text-decoration: none;
   transition:
     color 0.2s ease,
     background 0.2s ease,
@@ -240,28 +228,6 @@ function handleCommand(command: string | number | object) {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
   color: var(--color-primary);
-}
-
-.notice-item {
-  display: grid;
-  gap: 4px;
-  max-width: 280px;
-  white-space: normal;
-
-  strong {
-    color: var(--color-text-strong);
-    font-size: 13px;
-  }
-
-  small {
-    color: var(--color-text-muted);
-    font-size: 12px;
-    line-height: 1.4;
-  }
-
-  &.unread strong {
-    color: var(--color-primary);
-  }
 }
 
 .header-date {
@@ -302,6 +268,12 @@ function handleCommand(command: string | number | object) {
   margin-left: 3px;
   color: var(--color-text-muted);
   font-size: 16px;
+}
+
+.profile-menu-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 @media (max-width: 720px) {

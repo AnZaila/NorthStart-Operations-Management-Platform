@@ -11,7 +11,10 @@ import type {
   OperLog,
   OnlineSession,
   FileObject,
+  ImportResult,
+  Announcement,
   Profile,
+  ServerSnapshot,
   SysConfig,
   SysDept,
   SysPermissionItem,
@@ -59,6 +62,11 @@ export const userApi = {
     }),
   grantRoles: (id: number, roleIds: number[]) =>
     request<void>({ url: `/system/users/${id}/roles`, method: 'put', data: { roleIds } }),
+  importUsers: (file: File) => {
+    const data = new FormData()
+    data.append('file', file)
+    return request<ImportResult>({ url: '/system/users/import', method: 'post', data, timeout: 60000 })
+  },
 }
 
 export const roleApi = {
@@ -167,8 +175,25 @@ export const dashboardApi = {
 }
 
 export const noticeApi = {
-  list: () => request<Notice[]>({ url: '/ops/notifications' }),
+  page: (params: PageQuery & { keyword?: string; readFlag?: number }) =>
+    request<PageResult<Notice>>({ url: '/ops/notifications', params }),
   unreadCount: () => request<{ count: number }>({ url: '/ops/notifications/unread-count' }),
   read: (id: number) => request<void>({ url: `/ops/notifications/${id}/read`, method: 'post' }),
   readAll: () => request<void>({ url: '/ops/notifications/read-all', method: 'post' }),
+}
+
+export const announcementApi = {
+  page: (params: PageQuery & { keyword?: string; status?: string }) =>
+    request<PageResult<Announcement>>({ url: '/ops/announcements', params }),
+  create: (data: Record<string, unknown>) =>
+    request<{ id: number }>({ url: '/ops/announcements', method: 'post', data }),
+  update: (id: number, data: Record<string, unknown>) =>
+    request<void>({ url: `/ops/announcements/${id}`, method: 'put', data }),
+  publish: (id: number) =>
+    request<void>({ url: `/ops/announcements/${id}/publish`, method: 'post' }),
+  remove: (id: number) => request<void>({ url: `/ops/announcements/${id}`, method: 'delete' }),
+}
+
+export const monitorApi = {
+  server: () => request<ServerSnapshot>({ url: '/monitor/server' }),
 }

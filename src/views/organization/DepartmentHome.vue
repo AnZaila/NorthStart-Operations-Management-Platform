@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">ORGANIZATION</span>
         <h2>部门管理</h2>
-        <p>维护组织树、负责人和成员规模，全部走后端接口。</p>
+        <p>维护部门层级、负责人和联系方式。</p>
       </div>
       <div class="hero-actions">
         <el-button @click="table.search()">刷新</el-button>

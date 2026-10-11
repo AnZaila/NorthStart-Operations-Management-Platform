@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">FILES</span>
         <h2>文件中心</h2>
-        <p>头像和业务附件统一归档，下载受登录态保护，删除需要文件权限。</p>
+        <p>集中存放头像和业务附件，可下载或按权限删除。</p>
       </div>
       <div class="hero-actions">
         <el-upload :show-file-list="false" :http-request="upload">
@@ -26,7 +26,16 @@
         </el-table-column>
         <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click="open(row)">打开</el-button>
+            <el-button
+              link
+              type="primary"
+              tag="a"
+              :href="row.url"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              打开
+            </el-button>
             <el-button v-permission="'system:file:delete'" link type="danger" @click="remove(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -77,10 +86,6 @@ async function upload(options: UploadRequestOptions) {
   await fileApi.upload(options.file as File, 'common')
   ElMessage.success('已上传')
   await table.search()
-}
-
-function open(row: FileObject) {
-  window.open(row.url, '_blank')
 }
 
 async function remove(row: FileObject) {

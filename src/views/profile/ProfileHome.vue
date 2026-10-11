@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">ACCOUNT</span>
         <h2>个人中心</h2>
-        <p>维护本人资料、头像和密码。修改密码后当前会话会立即失效。</p>
+        <p>维护姓名、头像和登录密码。修改密码后需要重新登录。</p>
       </div>
     </section>
 

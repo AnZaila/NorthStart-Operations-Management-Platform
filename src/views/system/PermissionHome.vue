@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">PERMISSION</span>
         <h2>权限点</h2>
-        <p>按钮显隐和接口鉴权共用同一套权限码。</p>
+        <p>维护系统权限点，供角色授权时勾选。</p>
       </div>
       <div class="hero-actions">
         <el-button @click="load">刷新</el-button>

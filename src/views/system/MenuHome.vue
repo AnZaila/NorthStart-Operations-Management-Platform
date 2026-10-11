@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">NAVIGATION</span>
         <h2>菜单管理</h2>
-        <p>目录、页面和按钮权限统一维护，前端按 component 路径动态挂载路由。</p>
+        <p>配置侧栏目录、页面入口和按钮权限。</p>
       </div>
       <div class="hero-actions">
         <el-button @click="load">刷新</el-button>

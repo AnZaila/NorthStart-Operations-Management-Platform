@@ -164,6 +164,17 @@ async function handleCommand(command: string) {
 
   :deep(.el-menu-item) {
     position: relative;
+
+    .menu-item-link {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      flex: 1;
+      height: 100%;
+      color: inherit;
+      text-decoration: none;
+    }
+
     &::before {
       content: '';
       display: inline-block;

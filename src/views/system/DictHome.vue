@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">DICTIONARY</span>
         <h2>数据字典</h2>
-        <p>状态、职级等枚举由后端字典提供，页面不再写死选项。</p>
+        <p>维护状态下拉、职级等通用选项。</p>
       </div>
       <div class="hero-actions">
         <el-button v-permission="'system:dict:create'" type="primary" @click="openType">新建类型</el-button>

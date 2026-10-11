@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">ONLINE</span>
         <h2>在线用户</h2>
-        <p>当前未过期的刷新会话。强制下线会立即作废该设备的令牌。</p>
+        <p>查看当前在线设备，必要时可将指定会话强制下线。</p>
       </div>
       <div class="hero-actions">
         <el-button @click="load">刷新</el-button>

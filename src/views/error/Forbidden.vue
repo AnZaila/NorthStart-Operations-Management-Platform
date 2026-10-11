@@ -1,9 +1,13 @@
+<script setup lang="ts">
+import { RouterLink } from 'vue-router'
+</script>
+
 <template>
   <div class="not-found-page">
     <p class="eyebrow">FORBIDDEN</p>
     <h1>403</h1>
     <p class="description">当前账号没有访问该页面的权限。</p>
-    <el-button type="primary" @click="$router.push('/dashboard')">返回工作台</el-button>
+    <el-button type="primary" :tag="RouterLink" to="/dashboard">返回工作台</el-button>
   </div>
 </template>
 

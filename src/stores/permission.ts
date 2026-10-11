@@ -21,6 +21,8 @@ const PROTECTED_PATHS: Record<string, string> = {
   '/audit/operate': 'audit:operate:view',
   '/audit/online': 'audit:online:kick',
   '/system/file': 'system:file:view',
+  '/system/notice': 'ops:notice:view',
+  '/monitor/server': 'monitor:server:view',
 }
 
 function resolveView(component?: string) {

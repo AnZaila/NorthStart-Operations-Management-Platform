@@ -1,9 +1,13 @@
+<script setup lang="ts">
+import { RouterLink } from 'vue-router'
+</script>
+
 <template>
   <div class="not-found-page">
     <p class="eyebrow">SERVER ERROR</p>
     <h1>500</h1>
     <p class="description">服务暂时不可用，请稍后重试，或返回工作台继续操作。</p>
-    <el-button type="primary" @click="$router.push('/dashboard')">返回工作台</el-button>
+    <el-button type="primary" :tag="RouterLink" to="/dashboard">返回工作台</el-button>
   </div>
 </template>
 

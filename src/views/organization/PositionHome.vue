@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">ORGANIZATION</span>
         <h2>岗位管理</h2>
-        <p>岗位等级、编制和所属部门全部对接真实接口。</p>
+        <p>维护岗位名称、职级、编制和所属部门。</p>
       </div>
       <div class="hero-actions">
         <el-button @click="table.search()">刷新</el-button>
