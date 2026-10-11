@@ -131,8 +131,6 @@ import {
   useTemplateRef,
   provide,
 } from 'vue'
-// pinia 全局状态
-import { useMenuStore } from '@/stores/menu'
 import MyChild1 from './components/MyChild1.vue'
 import MyChild2 from './components/MyChild2.vue'
 import MyChild3 from './components/MyChild3.vue'
@@ -183,7 +181,8 @@ const age = toRef(userInfo, 'age')
 
 // 4、computed 计算属性
 // 只读取
-const userMenus = computed(() => useMenuStore().permissions.toString().split(','))
+const demoPermissions = ['dashboard:view', 'system:user:view', 'system:role:view']
+const userMenus = computed(() => demoPermissions)
 // 可读可写
 const firstName = ref('张')
 const lastName = ref('三')
@@ -305,7 +304,7 @@ const changeMyChild1Name = () => {
 
 // 8、props
 // 情况一：父组件传递数据给子组件，子组件通过props接收
-const userMenuList = useMenuStore().permissions.toString().split(',')
+const userMenuList = demoPermissions
 // 情况二：父组件传递数据给子组件，子组件通过props接收，并通过emit向父组件传递数据
 const receiveData = (data: string, age: number) => {
   alert(`父组件接收到子组件传递过来的数据了: ${data}, age: ${age}`)
