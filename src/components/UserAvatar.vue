@@ -45,7 +45,7 @@ function onError() {
   flex-shrink: 0;
   place-items: center;
   overflow: hidden;
-  border-radius: 50%;
+  border-radius: 20%;
   background: var(--color-primary-soft);
   color: var(--color-primary);
   font-weight: 700;

@@ -186,7 +186,7 @@ watch(
   height: 96px;
   overflow: hidden;
   border: 1px solid var(--color-border);
-  border-radius: 50%;
+  border-radius: 20%;
   background: var(--color-surface-muted);
 }
 .preview-frame {

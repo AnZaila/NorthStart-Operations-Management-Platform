@@ -30,8 +30,9 @@
                 :auto-upload="false"
                 :on-change="onPickAvatar"
               >
-                <el-button>上传头像</el-button>
+                <el-button type="primary" plain>上传头像</el-button>
               </el-upload>
+              <el-button type="primary" @click="generator.visible = true">生成头像</el-button>
             </div>
           </el-form-item>
           <el-form-item label="账号"><el-input :model-value="profile?.username" disabled /></el-form-item>
@@ -54,7 +55,7 @@
             <p class="hint">{{ passwordHint }}</p>
           </el-form-item>
           <el-form-item label="确认新密码"><el-input v-model="pwd.confirm" type="password" show-password /></el-form-item>
-          <el-button type="warning" :loading="changing" @click="changePassword">确认修改</el-button>
+          <el-button type="warning" plain :loading="changing" @click="changePassword">确认修改</el-button>
         </el-form>
       </el-card>
     </section>
@@ -89,6 +90,7 @@
     </section>
 
     <AvatarCropDialog v-model:visible="crop.visible" :file="crop.file" :loading="crop.saving" @confirm="uploadCropped" />
+    <AvatarGenerateDialog v-model:visible="generator.visible" :loading="generator.saving" @confirm="uploadGenerated" />
   </div>
 </template>
 
@@ -100,6 +102,7 @@ import type { UploadFile, UploadInstance } from 'element-plus'
 import { authApi, fileApi } from '@/api'
 import UserAvatar from '@/components/UserAvatar.vue'
 import AvatarCropDialog from './components/AvatarCropDialog.vue'
+import AvatarGenerateDialog from './components/AvatarGenerateDialog.vue'
 import { usePermissionStore } from '@/stores/permission'
 import { useSessionStore } from '@/stores/session'
 import { useTabsStore } from '@/stores/tabs'
@@ -117,6 +120,7 @@ const form = reactive({ displayName: '', email: '', phone: '', avatar: '' })
 const pwd = reactive({ oldPassword: '', newPassword: '', confirm: '' })
 const uploadRef = ref<UploadInstance>()
 const crop = reactive({ visible: false, saving: false, file: null as File | null })
+const generator = reactive({ visible: false, saving: false })
 const orgLabel = computed(() => [profile.value?.deptName, profile.value?.postName].filter(Boolean).join(' / ') || '--')
 const policy = ref<SecurityPolicy>({ passwordMinLength: 8, passwordMaxLength: 32, passwordHistory: 3 })
 const passwordHint = computed(() => {
@@ -161,17 +165,28 @@ function onPickAvatar(uploadFile: UploadFile) {
   crop.visible = true
 }
 
-async function uploadCropped(file: File) {
-  crop.saving = true
+async function applyAvatarFile(file: File, source: 'crop' | 'generate') {
+  const state = source === 'crop' ? crop : generator
+  state.saving = true
   try {
     const uploaded = await fileApi.upload(file, 'avatar')
     form.avatar = uploaded.url
     await saveProfile()
-    crop.visible = false
-    crop.file = null
+    state.visible = false
+    if (source === 'crop') {
+      crop.file = null
+    }
   } finally {
-    crop.saving = false
+    state.saving = false
   }
+}
+
+async function uploadCropped(file: File) {
+  await applyAvatarFile(file, 'crop')
+}
+
+async function uploadGenerated(file: File) {
+  await applyAvatarFile(file, 'generate')
 }
 
 async function saveProfile() {
