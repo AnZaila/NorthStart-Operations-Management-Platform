@@ -22,7 +22,7 @@
         <el-form :model="form" label-position="top">
           <el-form-item label="头像">
             <div class="avatar-row">
-              <UserAvatar :src="form.avatar" :name="form.displayName" :size="56" />
+              <UserAvatar :src="form.avatar" :name="form.displayName" :size="56" preview />
               <el-upload
                 ref="uploadRef"
                 :show-file-list="false"
@@ -255,7 +255,7 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-height: 220px;
+  max-height: 400px;
   overflow: auto;
 }
 @media (max-width: 900px) {

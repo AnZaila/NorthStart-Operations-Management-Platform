@@ -15,7 +15,7 @@ export const useSessionStore = defineStore('session', () => {
 
   async function login(payload: LoginPayload) {
     const tokens = await authApi.login(payload)
-    setTokens(tokens.accessToken, tokens.refreshToken)
+    setTokens(tokens.accessToken, tokens.refreshToken, tokens.expiresIn)
     profile.value = await authApi.me()
     ready.value = true
     return tokens
@@ -25,11 +25,7 @@ export const useSessionStore = defineStore('session', () => {
     if (profile.value) {
       return profile.value
     }
-    if (!getAccessToken() && getRefreshToken()) {
-      const tokens = await authApi.refresh(getRefreshToken())
-      setTokens(tokens.accessToken, tokens.refreshToken)
-    }
-    if (!getAccessToken()) {
+    if (!getAccessToken() && !getRefreshToken()) {
       throw new Error('UNAUTHENTICATED')
     }
     profile.value = await authApi.me()

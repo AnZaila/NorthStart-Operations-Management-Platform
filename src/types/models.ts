@@ -246,6 +246,9 @@ export interface ServerSnapshot {
   }>
 }
 
+export type FileStatus = 'pending' | 'approved' | 'rejected'
+export type FileKind = 'image' | 'pdf' | 'word' | 'excel' | 'ppt' | 'text' | 'other'
+
 export interface FileObject {
   id: number
   originalName: string
@@ -253,6 +256,14 @@ export interface FileObject {
   contentType?: string
   sizeBytes?: number
   bizType?: string
+  status?: FileStatus
+  reviewComment?: string
+  reviewerId?: number
+  reviewerName?: string
+  reviewTime?: string
+  ext?: string
+  kind?: FileKind
+  previewable?: boolean
   userId?: number
   uploader?: string
   createTime?: string

@@ -28,7 +28,15 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
-    include: ['element-plus', '@element-plus/icons-vue', 'vue-cropper'],
+    include: [
+      'element-plus',
+      '@element-plus/icons-vue',
+      'vue-cropper',
+      '@vue-office/docx',
+      '@vue-office/excel',
+      '@vue-office/pdf',
+      '@vue-office/pptx',
+    ],
   },
   server: {
     open: true, // 启动后自动打开浏览器

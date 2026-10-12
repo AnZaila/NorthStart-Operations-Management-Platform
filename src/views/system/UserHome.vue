@@ -398,7 +398,7 @@ function onMore(command: string, row: SysUser) {
 onMounted(async () => {
   try {
     const [roleList, deptList, postList, statuses] = await Promise.all([
-      roleApi.list(),
+      roleApi.options(),
       deptApi.options(),
       postApi.options(),
       dictApi.data('user_status'),

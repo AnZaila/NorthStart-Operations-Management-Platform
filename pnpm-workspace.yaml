@@ -1,2 +1,7 @@
 allowBuilds:
   '@parcel/watcher': true
+  '@vue-office/docx': true
+  '@vue-office/excel': true
+  '@vue-office/pdf': true
+  '@vue-office/pptx': true
+  vue-demi: true

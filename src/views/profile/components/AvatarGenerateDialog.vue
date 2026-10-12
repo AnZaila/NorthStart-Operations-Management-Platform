@@ -13,7 +13,7 @@
         <div class="preview-stage">
           <VueColorAvatar ref="avatarRef" :option="option" :size="240" />
         </div>
-        <el-button :icon="Refresh" :disabled="busy" @click="randomize">随机生成</el-button>
+        <el-button type="primary" plain :icon="Refresh" :disabled="busy" @click="randomize">随机生成</el-button>
         <p>调整五官和配色，确认后上传为头像。</p>
       </div>
 
@@ -102,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, shallowRef, toRaw, watch } from 'vue'
+import { ref, computed, shallowRef, toRaw, watch } from 'vue'
 import { ArrowLeft, ArrowRight, Refresh } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import VueColorAvatar from '@/vendor/vue-color-avatar/components/VueColorAvatar.vue'

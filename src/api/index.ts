@@ -1,4 +1,4 @@
-import { request } from '@/api/http'
+import { request, requestBlob } from '@/api/http'
 import type {
   CaptchaPayload,
   DashboardOverview,
@@ -73,6 +73,7 @@ export const userApi = {
 
 export const roleApi = {
   list: () => request<SysRole[]>({ url: '/system/roles' }),
+  options: () => request<SysRole[]>({ url: '/system/roles/options' }),
   detail: (id: number) => request<SysRole>({ url: `/system/roles/${id}` }),
   create: (data: Record<string, unknown>) =>
     request<{ id: number }>({ url: '/system/roles', method: 'post', data }),
@@ -162,13 +163,19 @@ export const auditApi = {
 }
 
 export const fileApi = {
-  page: (params: PageQuery) => request<PageResult<FileObject>>({ url: '/files', params }),
+  page: (
+    params: PageQuery & { keyword?: string; status?: string; bizType?: string; kind?: string },
+  ) => request<PageResult<FileObject>>({ url: '/files', params }),
   upload: (file: File, bizType = 'common') => {
     const data = new FormData()
     data.append('file', file)
     data.append('bizType', bizType)
-    return request<FileObject>({ url: '/files', method: 'post', data })
+    return request<FileObject>({ url: '/files', method: 'post', data, timeout: 120000 })
   },
+  content: (id: number) => requestBlob(`/files/${id}/content`),
+  download: (id: number) => requestBlob(`/files/${id}/download`),
+  review: (id: number, data: { result: 'approved' | 'rejected'; comment?: string }) =>
+    request<void>({ url: `/files/${id}/review`, method: 'post', data }),
   remove: (id: number) => request<void>({ url: `/files/${id}`, method: 'delete' }),
 }
 
