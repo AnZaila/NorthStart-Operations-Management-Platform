@@ -5,6 +5,7 @@
         <RouterLink
           v-for="item in tabsStore.tabs"
           :key="item.path"
+          v-wave
           :to="item.path"
           class="tag-item"
           :class="{ active: route.path === item.path }"

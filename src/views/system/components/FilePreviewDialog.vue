@@ -2,7 +2,7 @@
   <el-dialog
     :model-value="visible"
     :title="file?.originalName || '文件预览'"
-    width="92vw"
+    width="80vw"
     top="4vh"
     class="file-preview-dialog"
     destroy-on-close
@@ -15,56 +15,67 @@
       <span>{{ bizTypeLabel(file.bizType) }}</span>
       <span>{{ formatFileSize(file.sizeBytes) }}</span>
       <span>{{ file.uploader || '--' }}</span>
-      <span v-if="file.reviewerName">审核人 {{ file.reviewerName }}</span>
-      <span v-if="file.status === 'rejected' && file.reviewComment">驳回：{{ file.reviewComment }}</span>
+      <span v-if="file.status === 'rejected' && file.reviewComment"
+        >驳回：{{ file.reviewComment }}</span
+      >
     </div>
-    <div v-loading="busy" class="preview-stage">
+    <div v-loading="loading" class="preview-stage">
       <p v-if="error" class="preview-empty">{{ error }}</p>
-      <img v-else-if="kind === 'image' && objectUrl" class="preview-image" :src="objectUrl" alt="" />
+      <img
+        v-else-if="kind === 'image' && objectUrl"
+        class="preview-image"
+        :src="objectUrl"
+        alt=""
+      />
       <pre v-else-if="kind === 'text' && textContent" class="preview-text">{{ textContent }}</pre>
       <VueOfficePdf
         v-else-if="kind === 'pdf' && source"
         :src="source"
         class="preview-office"
-        @rendered="onRendered"
         @error="onRenderError"
       />
       <VueOfficeDocx
         v-else-if="kind === 'docx' && source"
         :src="source"
         class="preview-office"
-        @rendered="onRendered"
         @error="onRenderError"
       />
       <VueOfficeExcel
         v-else-if="kind === 'excel' && source"
         :src="source"
         class="preview-office"
-        @rendered="onRendered"
         @error="onRenderError"
       />
       <VueOfficePptx
         v-else-if="kind === 'pptx' && source"
         :src="source"
         class="preview-office"
-        @rendered="onRendered"
         @error="onRenderError"
       />
-      <div v-else-if="!busy" class="preview-empty">
+      <div v-else-if="!loading" class="preview-empty">
         <p>当前格式不支持在线预览，请下载后使用本地软件打开。</p>
-        <p v-if="file?.ext === 'doc' || file?.ext === 'ppt'">旧版 .doc / .ppt 请另存为 .docx / .pptx 后再预览。</p>
+        <p v-if="file?.ext === 'doc' || file?.ext === 'ppt'">
+          旧版 .doc / .ppt 请另存为 .docx / .pptx 后再预览。
+        </p>
       </div>
     </div>
     <el-form v-if="canReview" label-position="top" class="review-form">
       <el-form-item label="驳回原因" v-if="rejecting">
-        <el-input v-model="comment" type="textarea" :rows="2" maxlength="200" show-word-limit placeholder="请说明需要修改的内容" />
+        <el-input
+          v-model="comment"
+          type="textarea"
+          :rows="2"
+          maxlength="200"
+          show-word-limit
+          placeholder="请说明需要修改的内容"
+        />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button v-if="canDownload" :loading="downloading" @click="download">下载</el-button>
       <template v-if="canReview">
         <el-button type="danger" plain :loading="reviewing" @click="reject">驳回</el-button>
-        <el-button type="success" :loading="reviewing" @click="approve">通过</el-button>
+        <el-button type="success" plain :loading="reviewing" @click="approve">通过</el-button>
       </template>
       <el-button type="primary" @click="emit('update:visible', false)">关闭</el-button>
     </template>
@@ -100,21 +111,24 @@ const emit = defineEmits<{
 const { hasPermission } = usePermission()
 const session = useSessionStore()
 const loading = ref(false)
-const rendering = ref(false)
 const downloading = ref(false)
 const reviewing = ref(false)
 const rejecting = ref(false)
 const comment = ref('')
 const error = ref('')
-const source = ref<ArrayBuffer | string>('')
+const source = ref<ArrayBuffer | Blob | string>('')
 const objectUrl = ref('')
 const textContent = ref('')
-const busy = computed(() => loading.value || rendering.value)
 
 const statusMeta = computed(() => fileStatusMeta(props.file?.status))
-const ext = computed(() => (props.file?.ext || props.file?.originalName.split('.').pop() || '').toLowerCase())
+const ext = computed(() =>
+  (props.file?.ext || props.file?.originalName.split('.').pop() || '').toLowerCase(),
+)
 const kind = computed(() => {
-  if (props.file?.kind === 'image' || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext.value)) {
+  if (
+    props.file?.kind === 'image' ||
+    ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext.value)
+  ) {
     return 'image'
   }
   if (ext.value === 'pdf') {
@@ -135,7 +149,10 @@ const kind = computed(() => {
   return 'other'
 })
 const canReview = computed(
-  () => hasPermission('system:file:review') && props.file?.status === 'pending' && props.file?.bizType !== 'avatar',
+  () =>
+    hasPermission('system:file:review') &&
+    props.file?.status === 'pending' &&
+    props.file?.bizType !== 'avatar',
 )
 const canDownload = computed(() => {
   if (!props.file) {
@@ -177,9 +194,7 @@ async function load() {
     if (kind.value === 'other') {
       return
     }
-    // vue-office pptx only accepts URL string or ArrayBuffer (Blob is ignored).
     source.value = await blob.arrayBuffer()
-    rendering.value = kind.value === 'pptx'
   } catch {
     error.value = '预览加载失败，请下载后查看。'
   } finally {
@@ -187,12 +202,7 @@ async function load() {
   }
 }
 
-function onRendered() {
-  rendering.value = false
-}
-
 function onRenderError() {
-  rendering.value = false
   error.value = '该文档无法在浏览器中完整渲染，请下载后查看。'
 }
 
@@ -256,7 +266,6 @@ function cleanup(resetForm = true) {
   textContent.value = ''
   error.value = ''
   loading.value = false
-  rendering.value = false
   if (resetForm) {
     rejecting.value = false
     comment.value = ''
@@ -274,8 +283,8 @@ function cleanup(resetForm = true) {
   font-size: 12px;
 }
 .preview-stage {
-  min-height: 30vh;
-  max-height: 70vh;
+  min-height: 58vh;
+  max-height: 100%;
   overflow: auto;
   border: 1px solid var(--color-border);
   border-radius: 12px;
