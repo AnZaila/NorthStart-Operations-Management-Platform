@@ -300,6 +300,7 @@ function cleanup(resetForm = true) {
   margin: 0 auto;
 }
 .preview-text {
+  max-height: 58vh;
   margin: 0;
   padding: 16px 20px;
   white-space: pre-wrap;

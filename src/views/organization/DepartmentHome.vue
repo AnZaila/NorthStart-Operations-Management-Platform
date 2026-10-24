@@ -116,7 +116,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { deptApi, dictApi } from '@/api'
 import { useTableQuery } from '@/composables/useTableQuery'
 import type { DictItem, SysDept } from '@/types/models'
-import { formatDateTime, statusLabel, statusTag } from '@/utils/format'
+import { statusLabel, statusTag } from '@/utils/format'
 
 const statusDict = ref<DictItem[]>([])
 const parents = ref<SysDept[]>([])

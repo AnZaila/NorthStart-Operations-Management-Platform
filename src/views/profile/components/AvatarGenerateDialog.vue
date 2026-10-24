@@ -13,7 +13,9 @@
         <div class="preview-stage">
           <VueColorAvatar ref="avatarRef" :option="option" :size="240" />
         </div>
-        <el-button type="primary" plain :icon="Refresh" :disabled="busy" @click="randomize">随机生成</el-button>
+        <el-button type="primary" plain :icon="Refresh" :disabled="busy" @click="randomize"
+          >随机生成</el-button
+        >
         <p>调整五官和配色，确认后上传为头像。</p>
       </div>
 
@@ -86,7 +88,10 @@
               :key="color"
               type="button"
               class="swatch"
-              :class="{ active: option.background.color === color, checker: color === 'transparent' }"
+              :class="{
+                active: option.background.color === color,
+                checker: color === 'transparent',
+              }"
               :style="{ background: color === 'transparent' ? undefined : color }"
               @click="setBackground(color)"
             />
@@ -195,7 +200,12 @@ function createOption(previous?: AvatarOption): AvatarOption {
   const next = getRandomAvatarOption(
     {
       wrapperShape: WrapperShape.Squircle,
-      gender: genderPref.value === 'any' ? undefined : genderPref.value === 'male' ? Gender.Male : Gender.Female,
+      gender:
+        genderPref.value === 'any'
+          ? undefined
+          : genderPref.value === 'male'
+            ? Gender.Male
+            : Gender.Female,
     },
     previous,
   )
