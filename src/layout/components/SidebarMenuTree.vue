@@ -1,12 +1,12 @@
 <template>
   <template v-for="item in menus" :key="item.id">
     <el-menu-item v-if="!item.children?.length" :index="item.path || String(item.id)">
-      <RouterLink class="menu-item-link" :to="item.path || '/'">
-        <el-icon class="menu-icon">
-          <component :is="resolveMenuIcon(item.icon)" />
-        </el-icon>
-        <span>{{ item.name }}</span>
-      </RouterLink>
+      <el-icon class="menu-icon">
+        <component :is="resolveMenuIcon(item.icon)" />
+      </el-icon>
+      <template #title>
+        <RouterLink class="menu-item-link" :to="item.path || '/'">{{ item.name }}</RouterLink>
+      </template>
     </el-menu-item>
     <el-sub-menu v-else :index="item.path || String(item.id)">
       <template #title>
