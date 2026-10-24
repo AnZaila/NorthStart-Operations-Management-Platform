@@ -75,7 +75,7 @@
             >
               <img :src="row.url" :alt="row.originalName" />
             </button>
-            <span v-else class="file-kind">{{ (row.ext || '--').toUpperCase() }}</span>
+            <FileKind v-else :ext="row.ext" />
           </template>
         </el-table-column>
         <el-table-column prop="originalName" label="文件名" min-width="220">
@@ -167,6 +167,7 @@ import {
   saveBlob,
 } from '@/utils/file'
 import { formatDateTime } from '@/utils/format'
+import FileKind from './components/FileKind.vue'
 import FilePreviewDialog from './components/FilePreviewDialog.vue'
 import FileUploadDialog from './components/FileUploadDialog.vue'
 
@@ -294,19 +295,6 @@ onMounted(() => table.search())
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-.file-kind {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  padding: 4px 6px;
-  border-radius: 6px;
-  background: var(--color-surface-muted);
-  color: var(--color-text-muted);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
 }
 .file-name-link {
   padding: 0;
